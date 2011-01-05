@@ -1,21 +1,27 @@
 #!/bin/bash
 
+CURRENT_WD=`pwd`;
+
 SDK_BASE_URI="http://d1q6xku6craafi.cloudfront.net/";
 SDK_BASE_NAME="AWSSDKForNet.Src_";
 SDK_VERSION="$1";
 SDK_ARCHIVE_FILE_EXTENSION="zip";
-SDK_README_TEMPLATE="README.template"
-SDK_RELEASE_NOTES_URI="$2";
+SDK_ARCHIVE_FILE_NAME=$SDK_BASE_NAME$SDK_VERSION.$SDK_ARCHIVE_FILE_EXTENSION;
+SDK_README_TEMPLATE="$CURRENT_WD/README.template"
+echo $2 | sed -e 's/\//\\\//g' > tempuri;
+SDK_RELEASE_NOTES_URI=`cat tempuri`;
+rm -f tempuri;
 
-SDK_ARCHIVE_LOCATION=$SDK_BASE_URI$SDK_BASE_NAME$SDK_VERSION.$SDK_ARCHIVE_FILE_EXTENSION;
-CURRENT_WD=`pwd`;
+SDK_ARCHIVE_LOCATION=$SDK_BASE_URI$SDK_ARCHIVE_FILE_NAME;
 
-cd ../ && mkdir AWSSDKtemp && cd AWSSDKtemp && cp $CURRENT_WD/README.template ./ && wget $SDK_ARCHIVE_LOCATION && unzip $SDK_ARCHIVE_LOCATION && rm -f $SDK_ARCHIVE_LOCATION;
-cat $SDK_README_TEMPLATE | sed -e 's/@@SDK_VERSION@@/v\$SDK_VERSION/' | sed -e 's/@@SDK_RELEASE_NOTES_URI@@/\$SDK_RELEASE_NOTES_URI/ > README && rm $SDK_README_TEMPLATE;
+#rm -rf ../AWSSDKtemp;
 
-cd $CURRENT_DIR;
+#cd ../ && mkdir AWSSDKtemp && cd AWSSDKtemp && wget $SDK_ARCHIVE_LOCATION && unzip $SDK_ARCHIVE_FILE_NAME && rm -f $SDK_ARCHIVE_FILE_NAME;
+cd ../AWSSDKtemp && sed -e "s/@@SDK_VERSION@@/v$SDK_VERSION/g" -e "s/@@SDK_RELEASE_NOTES_URI@@/$SDK_RELEASE_NOTES_URI/g" $SDK_README_TEMPLATE > README;
 
-git checkout master && rsync -av ../AWSSDKtemp/* ./ --delete && git add . && git commit -a -m "Injection of v$SDK_VERSION source release of the AWSSDK for .NET";
+cd $CURRENT_WD;
+
+git checkout master && rsync -av ../AWSSDKtemp/* ./ --delete && git add . && git commit -a -m "Injection of v$SDK_VERSION source release of the AWSSDK for .NET" && rm -rf ../AWSSDKtemp;
 #git tag v$SDK_VERSION;
 #git push origin master && git push origin v$SDK_VERSION;
 
