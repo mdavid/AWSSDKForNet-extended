@@ -8,13 +8,14 @@ SDK_README_TEMPLATE="README.template"
 SDK_RELEASE_NOTES_URI="$2";
 
 SDK_ARCHIVE_LOCATION=$SDK_BASE_URI$SDK_BASE_NAME$SDK_VERSION.$SDK_ARCHIVE_FILE_EXTENSION;
+CURRENT_WD=`pwd`;
 
-mkdir temp && cd temp && wget $SDK_ARCHIVE_LOCATION && unzip $SDK_ARCHIVE_LOCATION && rm -f $SDK_ARCHIVE_LOCATION && cd ../;
+cd ../ && mkdir AWSSDKtemp && cd AWSSDKtemp && cp $CURRENT_WD/README.template ./ && wget $SDK_ARCHIVE_LOCATION && unzip $SDK_ARCHIVE_LOCATION && rm -f $SDK_ARCHIVE_LOCATION;
+cat $SDK_README_TEMPLATE | sed -e 's/@@SDK_VERSION@@/v\$SDK_VERSION/' | sed -e 's/@@SDK_RELEASE_NOTES_URI@@/\$SDK_RELEASE_NOTES_URI/ > README && rm $SDK_README_TEMPLATE;
 
-git checkout master && rsync -av temp/* ./ --delete;
-git checkout maintenance && cat $SDK_README_TEMPLATE | sed -e 's/@@SDK_VERSION@@/v\$SDK_VERSION/' | sed -e 's/@@SDK_RELEASE_NOTES_URI@@/\$SDK_RELEASE_NOTES_URI/ > README;
-#git checkout master;
-#git add . && git commit -a -m "Injection of v$SDK_VERSION source release of the AWSSDK for .NET";
+cd $CURRENT_DIR;
+
+git checkout master && rsync -av ../AWSSDKtemp/* ./ --delete && git add . && git commit -a -m "Injection of v$SDK_VERSION source release of the AWSSDK for .NET";
 #git tag v$SDK_VERSION;
 #git push origin master && git push origin v$SDK_VERSION;
 
