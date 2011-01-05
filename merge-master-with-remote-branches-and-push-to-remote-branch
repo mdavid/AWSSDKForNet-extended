@@ -1,6 +1,25 @@
 #!/bin/bash
-for branch in `git branch -a | grep -v "maintenance" | grep -v "master" | grep -v "HEAD" | sed -e 's/remotes\/origin\///'`; do 
-	git checkout $branch && git merge master && git push origin && git checkout master && git branch -D $branch;
-done
 
-git merge master && git push origin master && git checkout master;
+SDK_BASE_URI="http://d1q6xku6craafi.cloudfront.net/";
+SDK_BASE_NAME="AWSSDKForNet.Src_";
+SDK_VERSION="$1";
+SDK_ARCHIVE_FILE_EXTENSION="zip";
+SDK_README_TEMPLATE="README.template"
+SDK_RELEASE_NOTES_URI="$2";
+
+SDK_ARCHIVE_LOCATION=$SDK_BASE_URI$SDK_BASE_NAME$SDK_VERSION.$SDK_ARCHIVE_FILE_EXTENSION;
+
+mkdir temp && cd temp && wget $SDK_ARCHIVE_LOCATION && unzip $SDK_ARCHIVE_LOCATION && rm -f $SDK_ARCHIVE_LOCATION && cd ../;
+
+git checkout master && rsync -av temp/* ./ --delete;
+git checkout maintenance && cat $SDK_README_TEMPLATE | sed -e 's/@@SDK_VERSION@@/v\$SDK_VERSION/' | sed -e 's/@@SDK_RELEASE_NOTES_URI@@/\$SDK_RELEASE_NOTES_URI/ > README;
+#git checkout master;
+#git add . && git commit -a -m "Injection of v$SDK_VERSION source release of the AWSSDK for .NET";
+#git tag v$SDK_VERSION;
+#git push origin master && git push origin v$SDK_VERSION;
+
+#for branch in `git branch -a | grep -v "maintenance" | grep -v "master" | grep -v "HEAD" | sed -e 's/remotes\/origin\///'`; do 
+#	git checkout $branch && git merge master && git push origin && git checkout master && git branch -D $branch;
+#done
+
+#git merge master && git push origin master && git checkout master;
