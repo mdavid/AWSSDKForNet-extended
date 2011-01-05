@@ -1,0 +1,6 @@
+#!/bin/bash
+for branch in `git branch -a | grep -v "maintenance" | grep -v "master" | grep -v "HEAD" | sed -e 's/remotes\/origin\///'`; do 
+	git checkout $branch && git merge master && git push origin && git checkout master && git branch -D $branch;
+done
+
+git merge master && git push origin master && git checkout master;
