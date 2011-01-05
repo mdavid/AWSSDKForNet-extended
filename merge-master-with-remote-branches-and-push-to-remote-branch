@@ -14,19 +14,19 @@ rm -f tempuri;
 
 SDK_ARCHIVE_LOCATION=$SDK_BASE_URI$SDK_ARCHIVE_FILE_NAME;
 
-#rm -rf ../AWSSDKtemp;
+rm -rf ../AWSSDKtemp;
 
-#cd ../ && mkdir AWSSDKtemp && cd AWSSDKtemp && wget $SDK_ARCHIVE_LOCATION && unzip $SDK_ARCHIVE_FILE_NAME && rm -f $SDK_ARCHIVE_FILE_NAME;
+cd ../ && mkdir AWSSDKtemp && cd AWSSDKtemp && wget $SDK_ARCHIVE_LOCATION && unzip $SDK_ARCHIVE_FILE_NAME && rm -f $SDK_ARCHIVE_FILE_NAME;
 cd ../AWSSDKtemp && sed -e "s/@@SDK_VERSION@@/v$SDK_VERSION/g" -e "s/@@SDK_RELEASE_NOTES_URI@@/$SDK_RELEASE_NOTES_URI/g" $SDK_README_TEMPLATE > README;
 
 cd $CURRENT_WD;
 
 git checkout master && rsync -av ../AWSSDKtemp/* ./ --delete && git add . && git commit -a -m "Injection of v$SDK_VERSION source release of the AWSSDK for .NET" && rm -rf ../AWSSDKtemp;
-#git tag v$SDK_VERSION;
-#git push origin master && git push origin v$SDK_VERSION;
+git tag v$SDK_VERSION;
+git push origin master && git push origin v$SDK_VERSION;
 
-#for branch in `git branch -a | grep -v "maintenance" | grep -v "master" | grep -v "HEAD" | sed -e 's/remotes\/origin\///'`; do 
-#	git checkout $branch && git merge master && git push origin && git checkout master && git branch -D $branch;
-#done
+for branch in `git branch -a | grep -v "maintenance" | grep -v "master" | grep -v "HEAD" | sed -e 's/remotes\/origin\///'`; do 
+	git checkout $branch && git merge master && git push origin && git checkout master && git branch -D $branch;
+done
 
-#git merge master && git push origin master && git checkout master;
+git checkout maintenance && git merge master && git push origin && git checkout master;
