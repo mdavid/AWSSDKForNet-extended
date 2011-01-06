@@ -8,9 +8,7 @@ SDK_VERSION="$1";
 SDK_ARCHIVE_FILE_EXTENSION="zip";
 SDK_ARCHIVE_FILE_NAME=$SDK_BASE_NAME$SDK_VERSION.$SDK_ARCHIVE_FILE_EXTENSION;
 SDK_README_TEMPLATE="$CURRENT_WD/README.template"
-echo $2 | sed -e 's/\//\\\//g' > tempuri;
-SDK_RELEASE_NOTES_URI=`cat tempuri`;
-rm -f tempuri;
+SDK_RELEASE_NOTES_URI="$(echo -n "$2" | sed 's/\//\\\//g')"
 
 SDK_ARCHIVE_LOCATION=$SDK_BASE_URI$SDK_ARCHIVE_FILE_NAME;
 
@@ -25,8 +23,8 @@ git checkout master && rsync -av ../AWSSDKtemp/* ./ --delete && git add . && git
 git tag v$SDK_VERSION;
 git push origin master && git push origin v$SDK_VERSION;
 
-for branch in `git branch -a | grep -v "maintenance" | grep -v "master" | grep -v "HEAD" | sed -e 's/remotes\/origin\///'`; do 
+for branch in `git branch -ai | grep -v "master" | grep -v "HEAD" | sed -e 's/remotes\/origin\///'`; do 
 	git checkout $branch && git merge master && git push origin && git checkout master && git branch -D $branch;
 done
 
-git checkout maintenance && git merge master && git push origin && git checkout master;
+#git checkout maintenance && git merge master && git push origin && git checkout master;
