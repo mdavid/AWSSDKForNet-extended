@@ -23,8 +23,8 @@ git checkout master && rsync -av ../AWSSDKtemp/* ./ --delete && git add . && git
 git tag v$SDK_VERSION;
 git push origin master && git push origin v$SDK_VERSION;
 
-for branch in `git branch -a | grep "remotes/origin" | sed -e 's/remotes\/origin\///'`; do 
+for branch in `git branch -a | egrep -v "maintenance|master" | sed -e 's/remotes\/origin\///'`; do 
 	git checkout $branch && git merge master && git push origin && git checkout master && git branch -D $branch;
 done
 
-#git checkout maintenance && git merge master && git push origin && git checkout master;
+git checkout maintenance && git merge master && git push origin && git checkout master;
