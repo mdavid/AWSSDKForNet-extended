@@ -55,7 +55,9 @@ namespace Amazon.S3.Model
         internal NameValueCollection metaData;
         private S3CannedACL cannedACL;
         private int timeout = 0;
+        private int readWriteTimeout = 0;
         private S3StorageClass storageClass;
+        private ServerSideEncryptionMethod encryption;
 
         #endregion
 
@@ -602,6 +604,50 @@ namespace Amazon.S3.Model
 
         #endregion
 
+        #region ReadWriteTimeout
+
+        /// <summary>
+        /// Gets and sets of the ReadWriteTimeout property (in milliseconds).
+        /// The value of this property is assigned to the
+        /// ReadWriteTimeout property of the HTTPWebRequest object
+        /// used for S3 COPY requests.
+        /// </summary>
+        /// <remarks>A value less than or equal to 0 will be silently ignored</remarks>
+        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
+        public int ReadWriteTimeout
+        {
+            get { return this.readWriteTimeout; }
+            set
+            {
+                if (value > 0 || value == System.Threading.Timeout.Infinite)
+                {
+                    this.readWriteTimeout = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the ReadWriteTimeout property (in milliseconds). 
+        /// The value of this property is assigned to the
+        /// ReadWriteTimeout property of the HttpWebRequest.
+        /// </summary>
+        /// <param name="readWriteTimeout">ReadWriteTimeout property</param>
+        /// <remarks>A value less than or equal to 0 will be silently ignored</remarks>
+        /// <returns>this instance</returns>
+        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
+        public CopyObjectRequest WithReadWriteTimeout(int readWriteTimeout)
+        {
+            ReadWriteTimeout = readWriteTimeout;
+            return this;
+        }
+
+        internal override bool SupportReadWriteTimeout
+        {
+            get { return true; }
+        }
+
+        #endregion
+
         #region SourceVersionId
 
         /// <summary>
@@ -673,6 +719,39 @@ namespace Amazon.S3.Model
         public CopyObjectRequest WithStorageClass(S3StorageClass sClass)
         {
             this.StorageClass = sClass;
+            return this;
+        }
+
+        #endregion
+
+        #region ServerSideEncryption
+
+        /// <summary>
+        /// Gets and sets the ServerSideEncryptionMethod property.
+        /// Specifies the encryption used on the server to
+        /// store the content.
+        /// </summary>
+        public ServerSideEncryptionMethod ServerSideEncryptionMethod
+        {
+            get { return this.encryption; }
+            set { this.encryption = value; }
+        }
+
+        /// <summary>
+        /// Sets the ServerSideEncryptionMethod property for this request.
+        /// Specifies the encryption used on the server to
+        /// store the content.
+        /// Default is None.
+        /// </summary>
+        /// <param name="encryption">
+        /// The value of the ServerSideEncryptionMethod to set.
+        /// </param>
+        /// <returns>
+        /// The response with the ServerSideEncryptionMethod set.
+        /// </returns>
+        public CopyObjectRequest WithServerSideEncryptionMethod(ServerSideEncryptionMethod encryption)
+        {
+            this.ServerSideEncryptionMethod = encryption;
             return this;
         }
 

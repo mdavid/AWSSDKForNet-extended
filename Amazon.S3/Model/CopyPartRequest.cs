@@ -51,9 +51,11 @@ namespace Amazon.S3.Model
         private DateTime? modifiedSinceDate;
         private DateTime? unmodifiedSinceDate;
         private int timeout = System.Threading.Timeout.Infinite;
+        private int readWriteTimeout = 0;
         private int? partNumber;
         private long? firstByte;
         private long? lastByte;
+        private ServerSideEncryptionMethod serverSideEncryption;
 
         #endregion
 
@@ -506,6 +508,50 @@ namespace Amazon.S3.Model
 
         #endregion
 
+        #region ReadWriteTimeout
+
+        /// <summary>
+        /// Gets and sets of the ReadWriteTimeout property (in milliseconds).
+        /// The value of this property is assigned to the
+        /// ReadWriteTimeout property of the HTTPWebRequest object
+        /// used for S3 COPY requests.
+        /// </summary>
+        /// <remarks>A value less than or equal to 0 will be silently ignored</remarks>
+        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
+        public int ReadWriteTimeout
+        {
+            get { return this.readWriteTimeout; }
+            set
+            {
+                if (value > 0 || value == System.Threading.Timeout.Infinite)
+                {
+                    this.readWriteTimeout = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the ReadWriteTimeout property (in milliseconds). 
+        /// The value of this property is assigned to the
+        /// ReadWriteTimeout property of the HttpWebRequest.
+        /// </summary>
+        /// <param name="readWriteTimeout">ReadWriteTimeout property</param>
+        /// <remarks>A value less than or equal to 0 will be silently ignored</remarks>
+        /// <returns>this instance</returns>
+        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
+        public CopyPartRequest WithReadWriteTimeout(int readWriteTimeout)
+        {
+            ReadWriteTimeout = readWriteTimeout;
+            return this;
+        }
+
+        internal override bool SupportReadWriteTimeout
+        {
+            get { return true; }
+        }
+
+        #endregion
+
         #region PartNumber
 
         /// <summary>
@@ -615,6 +661,39 @@ namespace Amazon.S3.Model
         internal bool IsSetLastByte()
         {
             return this.lastByte.HasValue;
+        }
+
+        #endregion
+
+        #region ServerSideEncryption
+
+        /// <summary>
+        /// Gets and sets the ServerSideEncryptionMethod property.
+        /// Specifies the encryption used on the server to
+        /// store the content.
+        /// Default is None.
+        /// </summary>
+        public ServerSideEncryptionMethod ServerSideEncryptionMethod
+        {
+            get { return this.serverSideEncryption; }
+            set { this.serverSideEncryption = value; }
+        }
+
+        /// <summary>
+        /// Sets the ServerSideEncryptionMethod property for this request.
+        /// Specifies the encryption used on the server to
+        /// store the content.
+        /// </summary>
+        /// <param name="serverSideEncryption">
+        /// The value of the ServerSideEncryptionMethod to set.
+        /// </param>
+        /// <returns>
+        /// The response with the ServerSideEncryptionMethod set.
+        /// </returns>
+        public CopyPartRequest WithServerSideEncryptionMethod(ServerSideEncryptionMethod serverSideEncryption)
+        {
+            this.serverSideEncryption = serverSideEncryption;
+            return this;
         }
 
         #endregion
